@@ -20,3 +20,11 @@
 - /stop-env/{id}
 - /delete-env/{id}
 - /outputfile/{id} -> pagina com o texto de output
+
+## Cgroups
+```bash
+echo "+cpu +cpuset" > /sys/fs/cgroup/cgroup.subtree_control
+mkdir /sys/fs/cgroup/<name>
+echo <ID> > /sys/fs/cgroup/<name>/cpuset.cpus
+echo "<relation>" > /sys/fs/cgroup/<name>/cpu.max
+```
