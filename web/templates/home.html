@@ -32,20 +32,19 @@
                 <p><strong>I/O:</strong> {{ e[5] }}</p>
                 <p><strong>Status:</strong>
                     {% if e[6] == 0 %}
-                        <span class="text-yellow-500">Parado</span>
+                        <span class="text-green-500">Em execução</span>
                     {% elif e[6] == 1 %}
-                        <span class="text-green-500">Ativo</span>
+                        <span class="text-yellow-500">Parado</span>
                     {% elif e[6] == 2 %}
-                        <span class="text-red-500">Finalizado</span>
+                        <span class="text-red-500">Erro</span>
                     {% endif %}
                 </p>
                 <p><strong>Última ação:</strong> {{ e[7] }}</p>
 
                 <div class="mt-4 flex flex-wrap gap-2">
-                    <a href="/start-env/{{ e[0] }}" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded">Iniciar</a>
-                    <a href="/stop-env/{{ e[0] }}" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded">Parar</a>
-                    <a href="/delete-env/{{ e[0] }}" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">Deletar</a>
-                    <a href="/outputfile/{{ e[0] }}" class="bg-gray-700 hover:bg-gray-800 text-white px-3 py-1 rounded">Ver Output</a>
+                    <a href="/start_env/{{ e[0] }}" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded">Iniciar</a>
+                    <a href="/stop_env/{{ e[0] }}" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded">Parar</a>
+                    <a href="/delete_env/{{ e[0] }}" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">Deletar</a>
                 </div>
             </div>
             {% endfor %}

@@ -1,4 +1,4 @@
-import sqlite3, json, os
+import sqlite3, json, os, shutil
 from datetime import datetime
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -52,7 +52,36 @@ def add_programs(env_id, name, files):
 
     con.commit()
     con.close()
-    
+
+def start_env(env_id):
+    con = sqlite3.connect(DB_PATH)
+    c = con.cursor()
+
+    c.execute("UPDATE envs SET status=0 WHERE id=?", (env_id,))
+
+    con.commit()
+    con.close()
+
+def stop_env(env_id):
+    con = sqlite3.connect(DB_PATH)
+    c = con.cursor()
+
+    c.execute("UPDATE envs SET status=1 WHERE id=?", (env_id,))
+
+    con.commit()
+    con.close()
+
+def delete_env(env_id):
+    con = sqlite3.connect(DB_PATH)
+    c = con.cursor()
+
+    c.execute("PRAGMA foreign_keys = ON")
+
+    c.execute("DELETE FROM envs WHERE id=?", (env_id,))
+
+    con.commit()
+    con.close()
+
 def get_envs():
     con = sqlite3.connect(DB_PATH)
     c = con.cursor()

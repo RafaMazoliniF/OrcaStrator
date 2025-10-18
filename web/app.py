@@ -16,9 +16,6 @@ def direct():
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, 'database.db') 
 
-#/start-env/{id}
-#/stop-env/{id}
-#/delete-env/{id}
 #/outputfile/{id} -> pagina com o texto de output
 
 #/home -> visualização geral
@@ -55,10 +52,31 @@ def save_env():
     files = request.files.getlist("program_file")
     files = [f for f in files if f.filename]
     if files:   
-        print('tem programa')
         add_programs(env_id, name, files)
 
     return redirect('/home')
+
+#/start-env/{id}
+@app.route("/start_env/<int:env_id>")
+def start_env_route(env_id):
+    start_env(env_id)
+    
+    return redirect(url_for("home"))
+
+#/stop-env/{id}
+@app.route("/stop_env/<int:env_id>")
+def stop_env_route(env_id):
+    stop_env(env_id)
+    
+    return redirect(url_for("home"))
+
+#/delete-env/{id}
+@app.route("/delete_env/<int:env_id>")
+def delete_env_route(env_id):
+    delete_env(env_id)
+    
+    return redirect(url_for("home"))
+
 
 if __name__ == "__main__":        
     init_db()
