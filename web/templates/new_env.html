@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Novo Ambiente</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+
+    <div class="bg-white p-8 rounded shadow w-full max-w-md">
+        <h1 class="text-2xl font-bold mb-6 text-center">Criar Novo Ambiente</h1>
+
+            <form action="/save_env" method="POST" enctype="multipart/form-data" class="space-y-4">
+                
+                <div>
+                    <label class="block font-medium mb-1">Nome do Ambiente</label>
+                    <input type="text" name="name" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                </div>
+
+                <div>
+                    <label class="block font-medium mb-1">CPU Pins (ex: 0,1)</label>
+                    <input type="text" name="cpu_pins" placeholder="0,1,2" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                </div>
+
+                <div>
+                    <label class="block font-medium mb-1">CPU Máximo</label>
+                    <input type="number" name="cpu_max" min="0" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                </div>
+
+                <div>
+                    <label class="block font-medium mb-1">Memória (MB)</label>
+                    <input type="number" name="mem" min="0" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                </div>
+
+                <div>
+                    <label class="block font-medium mb-1">I/O</label>
+                    <input type="number" name="io" min="0" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                </div>
+
+                <div>
+                    <label class="block font-medium mb-1">Programa</label>
+                    <input type="file" name="program_file" multiple class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                </div>
+
+                <div class="flex justify-between mt-6">
+                    <a href="/home" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Cancelar</a>
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">Criar Ambiente</button>
+                </div>
+
+            </form>
+
+    </div>
+
+</body>
+</html>

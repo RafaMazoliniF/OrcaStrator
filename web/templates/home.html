@@ -1,1 +1,56 @@
-<h1>DEU CERTOOOO</h1>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Gerenciador de Ambientes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+    <header class="bg-blue-600 text-white p-4">
+        <h1 class="text-2xl font-bold">Gerenciador de Ambientes</h1>
+    </header>
+
+    <main class="p-6">
+        <!-- Botão para criar novo ambiente -->
+        <div class="mb-6">
+            <a href="/new_env" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded shadow">
+                + Novo Ambiente
+            </a>
+        </div>
+
+        <!-- Lista de ambientes -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for e in envs %}
+            <div class="bg-white rounded shadow p-4">
+                <h2 class="text-xl font-semibold mb-2">{{ e[1] }}</h2> <!-- name -->
+                
+                <p><strong>ID:</strong> {{ e[0] }}</p>
+                <p><strong>CPU Pins:</strong> {{ e[2] }}</p>
+                <p><strong>CPU Max:</strong> {{ e[3] }}</p>
+                <p><strong>Memória:</strong> {{ e[4] }} MB</p>
+                <p><strong>I/O:</strong> {{ e[5] }}</p>
+                <p><strong>Status:</strong>
+                    {% if e[6] == 0 %}
+                        <span class="text-yellow-500">Parado</span>
+                    {% elif e[6] == 1 %}
+                        <span class="text-green-500">Ativo</span>
+                    {% elif e[6] == 2 %}
+                        <span class="text-red-500">Finalizado</span>
+                    {% endif %}
+                </p>
+                <p><strong>Última ação:</strong> {{ e[7] }}</p>
+
+                <div class="mt-4 flex flex-wrap gap-2">
+                    <a href="/start-env/{{ e[0] }}" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded">Iniciar</a>
+                    <a href="/stop-env/{{ e[0] }}" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded">Parar</a>
+                    <a href="/delete-env/{{ e[0] }}" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">Deletar</a>
+                    <a href="/outputfile/{{ e[0] }}" class="bg-gray-700 hover:bg-gray-800 text-white px-3 py-1 rounded">Ver Output</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+
+</body>
+</html>
