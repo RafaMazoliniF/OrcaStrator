@@ -115,7 +115,7 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="name">Nome do Ambiente</label>
-                        <input type="text" id="name" name="name" class="form-control" placeholder="Ex: Servidor API Python" required>
+                        <input type="text" id="name" name="name" class="form-control" placeholder="Ex: Ambiente 1" required>
                     </div>
 
                     <div class="form-group">
@@ -148,11 +148,11 @@
                                 <span style="color: #94a3b8;"> ou arraste e solte aqui</span>
                             </div>
                             <div class="file-upload-hint">
-                                Suportados: .py, .sh, .js, .txt, .rb, .go, .java, .cpp, .c (vários arquivos permitidos)
+                                Suportados: .txt
                             </div>
                         </div>
                         <div id="filesPreview" class="files-list"></div>
-                        <input type="file" id="fileInput" name="program_file" class="hidden" accept=".py,.sh,.js,.txt,.rb,.go,.java,.cpp,.c" multiple onchange="handleFileUpload(event)">
+                        <input type="file" id="fileInput" name="program_file" class="hidden" accept=".txt" multiple onchange="handleFileUpload(event)">
                     </div>
                 </div>
                 <div class="modal-footer">
