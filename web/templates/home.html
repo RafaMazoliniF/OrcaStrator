@@ -5,275 +5,317 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OrcaStrator</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <body>
-   <header>
-        <div class="header-content">
-            <div class="logo">
-                <div class="logo-icon">
-                    <i class="fas fa-circle-nodes"></i>
-                </div>
-                <h1>OrcaStrator</h1>
-            </div>
-            <button class="btn-primary" onclick="openCreateModal()">
-                <i class="fas fa-plus"></i>
-                <span>Novo Ambiente</span>
-            </button>
+<header>
+    <div class="header-content">
+        <div class="logo">
+            <div class="logo-icon"><i class="fas fa-circle-nodes"></i></div>
+            <h1>OrcaStrator</h1>
         </div>
-    </header>
+        <button class="btn-primary" onclick="openCreateModal()">
+            <i class="fas fa-plus"></i> <span>Novo Ambiente</span>
+        </button>
+    </div>
+</header>
 
-    <main>
-        <div class="page-header">
-            <h2>Ambientes</h2>
-            <p>Gerencie seus ambientes de execução isolados</p>
+<main>
+    <div class="page-header">
+        <h2>Ambientes</h2>
+        <p>Gerencie seus ambientes de execução isolados</p>
+    </div>
+
+
+    {% if request.args.get('error_delete') %}
+        <div class="alert error-alert" id="errorDeleteAlert">
+            <i class="fas fa-exclamation-triangle"></i>
+            {{ request.args.get('error_delete') }}
         </div>
+    {% endif %}
 
-        {% if envs %}
-        <div class="env-list">
-            {% for env in envs %}
-            <div class="env-card">
-                <div class="env-card-content">
-                    <div class="env-info">
-                        <div class="env-header">
-                            <div class="env-name">{{ env[1] }}</div>
-
-                            {% if env[6] == 1 %}
-                            <span class="status-badge status-stopped">
-                                <span class="status-dot"></span>
-                                <span>Parado</span>
-                            </span>
-                            {% elif env[6] == 0 %}
-                            <span class="status-badge status-running">
-                                <span class="status-dot"></span>
-                                <span>Em execução</span>
-                            </span>
-                            {% else %}
-                            <span class="status-badge status-error">
-                                <span class="status-dot"></span>
-                                <span>Erro</span>
-                            </span>
-                            {% endif %}
-                        </div>
-
-                        <div class="env-specs">
-                            <div class="spec-item">
-                                <i class="fas fa-microchip"></i>
-                                <span>CPUs: {{ env[2] }} ({{ env[3] }}%)</span>
-                            </div>
-                            <div class="spec-item">
-                                <i class="fas fa-memory"></i>
-                                <span>Memória: {{ env[4] }} MB</span>
-                            </div>
-                            <div class="spec-item">
-                                <i class="fas fa-gauge"></i>
-                                <span>I/O: {{ env[5] }} MB/s</span>
-                            </div>
-                            <div class="timestamp">
-                                Última ação: {{ env[7] }}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="env-actions">
+    {% if envs %}
+    <div class="env-list">
+        {% for env in envs %}
+        <div class="env-card">
+            <div class="env-card-content">
+                <div class="env-info">
+                    <div class="env-header">
+                        <div class="env-name">{{ env[1] }}</div>
                         {% if env[6] == 1 %}
-                        <a href="/start_env/{{ env[0] }}" class="action-btn start" title="Iniciar">
-                            <i class="fas fa-play"></i>
-                        </a>
+                        <span class="status-badge status-stopped"><span class="status-dot"></span>Parado</span>
                         {% elif env[6] == 0 %}
-                        <a href="/stop_env/{{ env[0] }}" class="action-btn stop" title="Parar">
-                            <i class="fas fa-stop"></i>
-                        </a>
+                        <span class="status-badge status-running"><span class="status-dot"></span>Em execução</span>
+                        {% else %}
+                        <span class="status-badge status-error"><span class="status-dot"></span>Erro</span>
                         {% endif %}
-                        <button class="action-btn view" data-env-id="{{ env[0] }}" data-env-name="{{ env[1] }}" data-program-ids="{{ env[8] }}" title="Ver Programas">
-                            <i class="fas fa-file-lines"></i>
-                        </button>
-                        <a href="/delete_env/{{ env[0] }}" class="action-btn delete" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir este ambiente?')">
-                            <i class="fas fa-trash"></i>
-                        </a>
+                    </div>
+                    <div class="env-specs">
+                        <div class="spec-item"><i class="fas fa-microchip"></i>CPUs: {{ env[2] }} ({{ env[3] }}%)</div>
+                        <div class="spec-item"><i class="fas fa-memory"></i>Memória: {{ env[4] }} MB</div>
+                        <div class="spec-item"><i class="fas fa-gauge"></i>I/O: {{ env[5] }} MB/s</div>
+                        <div class="timestamp">Última ação: {{ env[7] }}</div>
                     </div>
                 </div>
-            </div>
-            {% endfor %}
-        </div>
-        {% else %}
-        <div class="empty-state">
-            <i class="fas fa-circle-nodes"></i>
-            <h3>Nenhum ambiente ainda</h3>
-            <p>Crie seu primeiro ambiente de execução isolado</p>
-        </div>
-        {% endif %}
-    </main>
-
-    <!-- MODAL: CRIAR AMBIENTE -->
-    <div id="createModal" class="modal">
-        <div class="modal-content">
-            <form action="/save_env" method="POST" enctype="multipart/form-data">
-                <div class="modal-header">
-                    <h2>Criar Novo Ambiente</h2>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="name">Nome do Ambiente</label>
-                        <input type="text" id="name" name="name" class="form-control" placeholder="Ex: Ambiente 1" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="cpu_pins">CPUs (separadas por vírgula)</label>
-                        <input type="text" id="cpu_pins" name="cpu_pins" class="form-control" placeholder="Ex: 0, 1, 2" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="cpu_max">Uso máximo de CPU (%)</label>
-                        <input type="range" id="cpu_max" name="cpu_max" min="1" max="100" value="50" oninput="updateRangeValue(this)">
-                        <div id="cpuMaxValue" class="range-value">50%</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="mem">Memória (MB)</label>
-                        <input type="number" id="mem" name="mem" class="form-control" value="512" placeholder="512" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="io">Limite de I/O (MB/s)</label>
-                        <input type="number" id="io" name="io" class="form-control" value="100" placeholder="100" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Arquivos de Programa/Script</label>
-                        <div class="file-upload" onclick="document.getElementById('fileInput').click()">
-                            <i class="fas fa-file-code"></i>
-                            <div>
-                                <span class="file-upload-label">Clique para enviar</span>
-                                <span style="color: #94a3b8;"> ou arraste e solte aqui</span>
-                            </div>
-                            <div class="file-upload-hint">
-                                Suportados: .txt
-                            </div>
-                        </div>
-                        <div id="filesPreview" class="files-list"></div>
-                        <input type="file" id="fileInput" name="program_file" class="hidden" accept=".txt" multiple onchange="handleFileUpload(event)">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-secondary" onclick="closeCreateModal()">Cancelar</button>
-                    <button type="submit" class="btn-primary">Criar Ambiente</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL: VER PROGRAMAS -->
-    <div id="outputModal" class="modal output-modal">
-        <div class="modal-content">
-            <div class="output-header">
-                <div>
-                    <h2 id="outputEnvName"></h2>
-                    <div id="outputPath" class="output-path"></div>
-                </div>
-                <button class="btn-close" onclick="closeOutputModal()">&times;</button>
-            </div>
-            <div class="output-body">
-                <pre id="outputContent"></pre>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        let uploadedFiles = [];
-
-        function openCreateModal() {
-            document.getElementById('createModal').classList.add('active');
-        }
-
-        function closeCreateModal() {
-            document.getElementById('createModal').classList.remove('active');
-            uploadedFiles = [];
-            document.getElementById('filesPreview').innerHTML = '';
-            document.getElementById('fileInput').value = '';
-        }
-
-        function updateRangeValue(input) {
-            document.getElementById('cpuMaxValue').textContent = input.value + '%';
-        }
-
-        function handleFileUpload(event) {
-            const files = Array.from(event.target.files);
-            uploadedFiles = files;
-            
-            const preview = document.getElementById('filesPreview');
-            preview.innerHTML = '';
-            
-            files.forEach((file, index) => {
-                const fileDiv = document.createElement('div');
-                fileDiv.className = 'file-preview';
-                fileDiv.innerHTML = `
-                    <div class="file-preview-info">
-                        <i class="fas fa-file-code"></i>
-                        <div>
-                            <div class="file-preview-name">${file.name}</div>
-                            <div class="file-preview-size">${(file.size / 1024).toFixed(2)} KB</div>
-                        </div>
-                    </div>
-                    <button type="button" class="btn-remove" onclick="removeFile(${index})">
-                        <i class="fas fa-trash"></i>
+                <div class="env-actions">
+                    {% if env[6] == 1 %}
+                    <a href="/start_env/{{ env[0] }}" class="action-btn start" title="Iniciar"><i class="fas fa-play"></i></a>
+                    {% elif env[6] == 0 %}
+                    <a href="/stop_env/{{ env[0] }}" class="action-btn stop" title="Parar"><i class="fas fa-stop"></i></a>
+                    {% endif %}
+                    <button class="action-btn view" data-env-id="{{ env[0] }}" data-env-name="{{ env[1] }}" data-program-ids="{{ env[8] }}" title="Ver Programas">
+                        <i class="fas fa-file-lines"></i>
                     </button>
-                `;
-                preview.appendChild(fileDiv);
-            });
-        }
+                    <a href="/delete_env/{{ env[0] }}" class="action-btn delete" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir este ambiente?')">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-circle-nodes"></i>
+        <h3>Nenhum ambiente ainda</h3>
+        <p>Crie seu primeiro ambiente de execução isolado</p>
+    </div>
+    {% endif %}
+</main>
 
-        function removeFile(index) {
-            const dt = new DataTransfer();
-            const input = document.getElementById('fileInput');
-            const files = Array.from(input.files);
-            
-            files.forEach((file, i) => {
-                if (i !== index) dt.items.add(file);
-            });
-            
-            input.files = dt.files;
-            handleFileUpload({ target: input });
-        }
 
-        function viewPrograms(envId, envName, programIds) {
-            document.getElementById('outputEnvName').textContent = envName;
-            document.getElementById('outputPath').textContent = 'Arquivos do Programa';
-            
-            if (!programIds || programIds === 'None') {
-                document.getElementById('outputContent').textContent = 'Nenhum arquivo de programa enviado para este ambiente.';
-            } else {
-                document.getElementById('outputContent').textContent = 'IDs dos Programas: ' + programIds + '\n\nA exibição do conteúdo será implementada no backend.';
-            }
-            
-            document.getElementById('outputModal').classList.add('active');
-        }
+<div id="createModal" class="modal">
+    <div class="modal-content">
+        <form action="/save_env" method="POST" enctype="multipart/form-data">
+            <div class="modal-header"><h2>Criar Novo Ambiente</h2></div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="name">Nome do Ambiente</label>
+                    <input type="text" id="name" name="name" class="form-control" placeholder="Ex: Ambiente 1" required>
+                
+                    {% if error_name %}
+                        <div id="modalErrorAlert">
+                            {{ error_name }}
+                        </div>
+                    {% else %}
+                        <div id="modalErrorAlert" style="display:none;"></div>
+                    {% endif %}
+                </div>
 
-        function closeOutputModal() {
-            document.getElementById('outputModal').classList.remove('active');
-        }
+                <div class="form-group">
+                    <label>CPUs</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item" onclick="selectCPU('0')">
+                            <input type="radio" id="cpu0" name="cpu_option" value="0">
+                            <label for="cpu0">CPU 0</label>
+                        </div>
+                        <div class="checkbox-item" onclick="selectCPU('1')">
+                            <input type="radio" id="cpu1" name="cpu_option" value="1">
+                            <label for="cpu1">CPU 1</label>
+                        </div>
+                        <div class="checkbox-item" onclick="selectCPU('0,1')">
+                            <input type="radio" id="cpu_both" name="cpu_option" value="0,1">
+                            <label for="cpu_both">CPU 0 e 1</label>
+                        </div>
+                    </div>
+                    <input type="hidden" id="cpu_pins" name="cpu_pins" required>
+                </div>
 
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.action-btn.view').forEach(button => {
-                button.addEventListener('click', function() {
-                    const envId = this.getAttribute('data-env-id');
-                    const envName = this.getAttribute('data-env-name');
-                    const programIds = this.getAttribute('data-program-ids');
-                    viewPrograms(envId, envName, programIds);
-                });
-            });
+                <div class="form-group">
+                    <label for="cpu_max">Uso máximo de CPU (%)</label>
+                    <input type="range" id="cpu_max" name="cpu_max" min="1" max="100" value="50" oninput="updateRangeValue(this)">
+                    <div id="cpuMaxValue" class="range-value">50%</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="mem">Memória (MB)</label>
+                    <input type="number" id="mem" name="mem" class="form-control" min="1" max="4096" value="512" placeholder="512" required oninput="updateMemoryDisplay()">
+                    <div class="memory-info">
+                        <span>Disponível: <span id="availableMemory">4096</span> MB</span>
+                        <span>Máximo: 4096 MB</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="io">Limite de I/O (MB/s)</label>
+                    <input type="number" id="io" name="io" class="form-control" value="100" placeholder="100" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Arquivos de Programa/Script</label>
+                    <div class="file-upload" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-file-code"></i>
+                        <div><span class="file-upload-label">Clique para enviar</span><span style="color: #94a3b8;"> ou arraste e solte aqui</span></div>
+                        <div class="file-upload-hint">Suportados: .txt</div>
+                    </div>
+                    <div id="filesPreview" class="files-list"></div>
+                    <input type="file" id="fileInput" name="program_file" class="hidden" accept=".txt" multiple onchange="handleFileUpload(event)">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeCreateModal()">Cancelar</button>
+                <button type="submit" class="btn-primary">Criar Ambiente</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="outputModal" class="modal output-modal">
+    <div class="modal-content">
+        <div class="output-header">
+            <div>
+                <h2 id="outputEnvName"></h2>
+                <div id="outputPath" class="output-path"></div>
+            </div>
+            <button class="btn-close" onclick="closeOutputModal()">&times;</button>
+        </div>
+        <div class="output-body"><pre id="outputContent"></pre></div>
+    </div>
+</div>
+
+<script>
+let uploadedFiles = [];
+let usedMemory = 0;
+
+
+function calculateUsedMemory() {
+    const envCards = document.querySelectorAll('.env-card');
+    let totalUsed = 0;
+    
+    envCards.forEach(card => {
+        const memText = card.querySelector('.spec-item:nth-child(2)').textContent;
+        const memValue = parseInt(memText.match(/\d+/)[0]);
+        totalUsed += memValue;
+    });
+    
+    usedMemory = totalUsed;
+    return totalUsed;
+}
+
+function openCreateModal() {
+    calculateUsedMemory();
+    document.getElementById('createModal').classList.add('active');
+    updateMemoryDisplay();
+}
+
+function closeCreateModal() {
+    document.getElementById('createModal').classList.remove('active');
+    uploadedFiles = [];
+    document.getElementById('filesPreview').innerHTML = '';
+    document.getElementById('fileInput').value = '';
+    document.getElementById('cpu_pins').value = '';
+    document.querySelectorAll('.checkbox-item').forEach(item => item.classList.remove('selected'));
+    document.querySelectorAll('input[name="cpu_option"]').forEach(radio => radio.checked = false);
+}
+
+function updateRangeValue(input) {
+    document.getElementById('cpuMaxValue').textContent = input.value + '%';
+}
+
+function updateMemoryDisplay() {
+    const memInput = document.getElementById('mem');
+    const availableMemory = 4096 - usedMemory;
+    document.getElementById('availableMemory').textContent = availableMemory;
+    memInput.max = availableMemory;
+    
+    if (parseInt(memInput.value) > availableMemory) {
+        memInput.value = availableMemory;
+    }
+    
+ 
+    memInput.placeholder = `Máximo: ${availableMemory} MB`;
+}
+
+function selectCPU(value) {
+
+    document.querySelectorAll('.checkbox-item').forEach(item => {
+        item.classList.remove('selected');
+    });
+    
+
+    document.querySelectorAll('input[name="cpu_option"]').forEach(radio => {
+        if (radio.value === value) {
+            radio.checked = true;
+            radio.closest('.checkbox-item').classList.add('selected');
+        } else {
+            radio.checked = false;
+        }
+    });
+    
+
+    document.getElementById('cpu_pins').value = value;
+}
+
+function handleFileUpload(event) {
+    const files = Array.from(event.target.files);
+    uploadedFiles = files;
+    const preview = document.getElementById('filesPreview');
+    preview.innerHTML = '';
+    files.forEach((file, index) => {
+        const fileDiv = document.createElement('div');
+        fileDiv.className = 'file-preview';
+        fileDiv.innerHTML = `
+            <div class="file-preview-info">
+                <i class="fas fa-file-code"></i>
+                <div>
+                    <div class="file-preview-name">${file.name}</div>
+                    <div class="file-preview-size">${(file.size / 1024).toFixed(2)} KB</div>
+                </div>
+            </div>
+            <button type="button" class="btn-remove" onclick="removeFile(${index})"><i class="fas fa-trash"></i></button>
+        `;
+        preview.appendChild(fileDiv);
+    });
+}
+
+function removeFile(index) {
+    const dt = new DataTransfer();
+    const input = document.getElementById('fileInput');
+    const files = Array.from(input.files);
+    files.forEach((file, i) => {
+        if (i !== index) dt.items.add(file);
+    });
+    input.files = dt.files;
+    handleFileUpload({ target: input });
+}
+
+function viewPrograms(envId, envName, programIds) {
+    document.getElementById('outputEnvName').textContent = envName;
+    document.getElementById('outputPath').textContent = 'Arquivos do Programa';
+    if (!programIds || programIds === 'None') {
+        document.getElementById('outputContent').textContent = 'Nenhum arquivo de programa enviado para este ambiente.';
+    } else {
+        document.getElementById('outputContent').textContent = 'IDs dos Programas: ' + programIds + '\n\nA exibição do conteúdo será implementada no backend.';
+    }
+    document.getElementById('outputModal').classList.add('active');
+}
+
+function closeOutputModal() {
+    document.getElementById('outputModal').classList.remove('active');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.action-btn.view').forEach(button => {
+        button.addEventListener('click', function() {
+            const envId = this.getAttribute('data-env-id');
+            const envName = this.getAttribute('data-env-name');
+            const programIds = this.getAttribute('data-program-ids');
+            viewPrograms(envId, envName, programIds);
         });
+    });
 
-        window.onclick = function(event) {
-            const createModal = document.getElementById('createModal');
-            const outputModal = document.getElementById('outputModal');
-            if (event.target === createModal) {
-                closeCreateModal();
-            }
-            if (event.target === outputModal) {
-                closeOutputModal();
-            }
-        }
-    </script>
+    const errorDeleteAlert = document.getElementById('errorDeleteAlert');
+    if (errorDeleteAlert) {
+        setTimeout(() => {
+            errorDeleteAlert.style.opacity = '0';
+            setTimeout(() => errorDeleteAlert.remove(), 300);
+        }, 3000);
+    }
+});
+
+window.onclick = function(event) {
+    if (event.target === document.getElementById('createModal')) closeCreateModal();
+    if (event.target === document.getElementById('outputModal')) closeOutputModal();
+}
+</script>
 </body>
 </html>
