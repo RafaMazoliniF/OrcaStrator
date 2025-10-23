@@ -84,6 +84,28 @@ def delete_env_route(env_id):
     
     return redirect(url_for("home"))
 
+@app.route("/program_content/<int:env_id>/<int:program_id>")
+def program_content(env_id, program_id):
+    con = sqlite3.connect(DB_PATH)
+    c = con.cursor()
+
+    c.execute("SELECT path FROM programs WHERE id=? AND env_id=?", (program_id, env_id))
+    row = c.fetchone()
+    con.close()
+
+    if not row:
+        return jsonify({"error": "Arquivo não encontrado"}), 404
+
+    file_path = row[0]
+    if not os.path.exists(file_path):
+        return jsonify({"error": "Arquivo não existe no servidor"}), 404
+
+    with open(file_path, "r", encoding="utf-8") as f:
+        content = f.read()
+
+    return jsonify({"content": content})
+
+
 if __name__ == "__main__":        
     init_db()
     app.run(host="0.0.0.0", port=5000, debug=True, use_reloader=True)
