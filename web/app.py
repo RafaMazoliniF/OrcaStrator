@@ -3,7 +3,6 @@ from datetime import datetime
 
 import sqlite3, os, uuid
 
-from functions import *
 from manip_db import *
 
 app = Flask(__name__)

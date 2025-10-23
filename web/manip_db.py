@@ -1,6 +1,5 @@
 import sqlite3, json, os, shutil
 from datetime import datetime
-from functions import *
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, 'database.db') 
