@@ -1,3 +1,4 @@
 .vagrant
 .vscode/
 .env
+web/__pycache__/
